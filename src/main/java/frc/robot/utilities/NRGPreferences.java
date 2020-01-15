@@ -12,123 +12,238 @@ import java.util.ArrayList;
 import edu.wpi.first.wpilibj.Preferences;
 
 /**
- * Add your docs here.
+ * An implementation of robot preferences.
  */
 public class NRGPreferences {
 
-    public interface IVisitable {
-        public void accept(IVisitor vistor);
+    /**
+     * An interface defining methods that allow a Visitor to perform an operation on
+     * a Value
+     */
+    public interface IVisitableValue {
+        /**
+         * Called to allow a Visitor to perform an operation on a Value.
+         * 
+         * @param vistor The Visitor that performs an operation.
+         */
+        public void accept(IValueVisitor vistor);
     }
 
-    public interface IVisitor {
+    /** An interface defining the types of Values a Visitor can consume. */
+    public interface IValueVisitor {
+        /**
+         * Perform an operation on a StringValue.
+         * 
+         * @param value The StringValue.
+         */
         public void visit(StringValue value);
+
+        /**
+         * Perform an operation on a IntegerValue.
+         * 
+         * @param value The IntegerValue.
+         */
         public void visit(IntegerValue value);
+
+        /**
+         * Perform an operation on a DoubleValue.
+         * 
+         * @param value The DoubleValue
+         */
         public void visit(DoubleValue value);
+
+        /**
+         * Perform an operation on a BooleanValue.
+         * 
+         * @param value The BooleanValue
+         */
         public void visit(BooleanValue value);
     }
 
-    public static abstract class ValueBase implements IVisitable {
+    /** The base class for all preferences value types. */
+    public static abstract class ValueBase implements IVisitableValue {
         protected final String key;
 
+        /**
+         * Constructs an instance of this class.
+         * 
+         * @param key The preferences key.
+         */
         protected ValueBase(final String key) {
             this.key = key;
 
             values.add(this);
         }
 
+        /**
+         * Returns the preferences key.
+         * 
+         * @return The preferences key.
+         */
         public String getKey() {
             return this.key;
         }
 
+        /**
+         * Writes the default value of this preference key to the preferences file.
+         */
         public void writeDefaultValue() {
             accept(writeDefaultVisitor);
         }
 
+        /**
+         * Prints the preference key current value if it is not set to the default.
+         */
         public void printIfNotDefault() {
             accept(printIfNotDefaultVisitor);
         }
     }
 
+    /**
+     * A base class for a preference value of the specified type.
+     * 
+     * @param <TValue> The preference value type.
+     */
     public static abstract class Value<TValue> extends ValueBase {
         protected final TValue defaultValue;
 
+        /**
+         * Constructs an instance of this class.
+         * 
+         * @param key          The preferences key.
+         * @param defaultValue The default value.
+         */
         protected Value(final String key, final TValue defaultValue) {
             super(key);
             this.defaultValue = defaultValue;
         }
 
+        /**
+         * Returns the default value of the preferences key.
+         * 
+         * @return The default value.
+         */
         public TValue getDefaultValue() {
             return this.defaultValue;
         }
     }
 
+    /** A class implementing a preferences string value. */
     public static class StringValue extends Value<String> {
 
+        /**
+         * Constructs an instance of this class.
+         * 
+         * @param key          The preferences key.
+         * @param defaultValue The default value.
+         */
         public StringValue(final String key, final String defaultValue) {
             super(key, defaultValue);
         }
 
         @Override
-        public void accept(final IVisitor vistor) {
+        public void accept(final IValueVisitor vistor) {
             vistor.visit(this);
         }
 
+        /**
+         * Returns the current value of the preferences key.
+         * 
+         * @return The current value.
+         */
         public String getValue() {
             return preferences.getString(this.key, this.defaultValue);
         }
     }
 
-    public static class IntegerValue extends Value<Integer> implements IVisitable {
+    /** A class implementing a preferences integer value. */
+    public static class IntegerValue extends Value<Integer> implements IVisitableValue {
 
+        /**
+         * Constructs an instance of this class.
+         * 
+         * @param key          The preferences key.
+         * @param defaultValue The default value.
+         */
         public IntegerValue(final String key, final int defaultValue) {
             super(key, defaultValue);
         }
 
         @Override
-        public void accept(final IVisitor vistor) {
+        public void accept(final IValueVisitor vistor) {
             vistor.visit(this);
         }
 
+        /**
+         * Returns the current value of the preferences key.
+         * 
+         * @return The current value.
+         */
         public int getValue() {
             return preferences.getInt(this.key, this.defaultValue.intValue());
         }
 
     }
 
-    public static class DoubleValue extends Value<Double> implements IVisitable {
+    /** A class implementing a preferences double value. */
+    public static class DoubleValue extends Value<Double> implements IVisitableValue {
 
+        /**
+         * Constructs an instance of this class.
+         * 
+         * @param key          The preferences key.
+         * @param defaultValue The default value.
+         */
         public DoubleValue(final String key, final double defaultValue) {
             super(key, defaultValue);
         }
 
         @Override
-        public void accept(final IVisitor vistor) {
+        public void accept(final IValueVisitor vistor) {
             vistor.visit(this);
         }
 
+        /**
+         * Returns the current value of the preferences key.
+         * 
+         * @return The current value.
+         */
         public double getValue() {
             return preferences.getDouble(this.key, this.defaultValue.doubleValue());
         }
 
     }
 
-    public static class BooleanValue extends Value<Boolean> implements IVisitable {
+    /** A class implementing a preferences Boolean value. */
+    public static class BooleanValue extends Value<Boolean> implements IVisitableValue {
 
+        /**
+         * Constructs an instance of this class.
+         * 
+         * @param key          The preferences key.
+         * @param defaultValue The default value.
+         */
         public BooleanValue(final String key, final boolean defaultValue) {
             super(key, defaultValue);
         }
 
         @Override
-        public void accept(final IVisitor vistor) {
+        public void accept(final IValueVisitor vistor) {
             vistor.visit(this);
         }
 
+        /**
+         * Returns the current value of the preferences key.
+         * 
+         * @return The current value.
+         */
         public boolean getValue() {
             return preferences.getBoolean(this.key, this.defaultValue.booleanValue());
         }
     }
 
-    private static class WriteDefaultVistor implements IVisitor {
+    /** A Visitor implementation that writes the default value of the preferences key to the preferences file. */
+    private static class WriteDefaultVistor implements IValueVisitor {
 
         @Override
         public void visit(final StringValue value) {
@@ -152,14 +267,19 @@ public class NRGPreferences {
 
     }
 
-    private static class PrintIfNotDefaultVisitor implements IVisitor {
+    /** A Visitor implementation that prints the current value to the console if it is not set to the default value.  */
+    private static class PrintIfNotDefaultVisitor implements IValueVisitor {
+
+        private void printNonDefaultValue(String key, String value) {
+            System.out.println("NON-DEFAULT PREFERENCE: " + key + " = " + value);
+        }
 
         @Override
         public void visit(StringValue value) {
             String currentValue = value.getValue();
 
             if (currentValue.compareTo(value.getDefaultValue()) != 0) {
-                System.out.println("NON-DEFAULT PREFERENCE: " + value.getKey() + " = " + currentValue);
+                printNonDefaultValue(value.getKey(), currentValue);
             }
         }
 
@@ -168,25 +288,25 @@ public class NRGPreferences {
             int currentValue = value.getValue();
 
             if (currentValue != value.getDefaultValue().intValue()) {
-                System.out.println("NON-DEFAULT PREFERENCE: " + value.getKey() + " = " + currentValue);
+                printNonDefaultValue(value.getKey(), Integer.toString(currentValue));
             }
         }
 
         @Override
-        public void visit(DoubleValue currentValue) {
-            double value2 = currentValue.getValue();
+        public void visit(DoubleValue value) {
+            double currentValue = value.getValue();
 
-            if (value2 != currentValue.getDefaultValue().doubleValue()) {
-                System.out.println("NON-DEFAULT PREFERENCE: " + currentValue.getKey() + " = " + value2);
+            if (currentValue != value.getDefaultValue().doubleValue()) {
+                printNonDefaultValue(value.getKey(), Double.toString(currentValue));
             }
         }
 
         @Override
-        public void visit(BooleanValue currentValue) {
-            boolean value2 = currentValue.getValue();
+        public void visit(BooleanValue value) {
+            boolean currentValue = value.getValue();
 
-            if (value2 != currentValue.getDefaultValue().booleanValue()) {
-                System.out.println("NON-DEFAULT PREFERENCE: " + currentValue.getKey() + " = " + value2);
+            if (currentValue != value.getDefaultValue().booleanValue()) {
+                printNonDefaultValue(value.getKey(), Boolean.toString(currentValue));
             }
         }
 
@@ -199,6 +319,7 @@ public class NRGPreferences {
     private static final WriteDefaultVistor writeDefaultVisitor = new WriteDefaultVistor();
     private static final PrintIfNotDefaultVisitor printIfNotDefaultVisitor = new PrintIfNotDefaultVisitor();
 
+    /** Initializes the preferences, write default preferences if needed/requested. */
     public static void init() {
         if (WRITE_DEFAULT.getValue()) {
             values.stream().forEach(p -> p.writeDefaultValue());

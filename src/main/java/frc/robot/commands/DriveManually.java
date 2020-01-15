@@ -14,11 +14,22 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utilities.NRGPreferences.BooleanValue;
 
+/**
+ * The default command for the DriveSubsystem. It enables tank-style control
+ * through two joysticks, are arcade-style control through an Xbox controller.
+ */
 public class DriveManually extends RunCommand {
 
     static BooleanValue USING_TANK_CONTROL = new BooleanValue("DriveManually/UsingTankControl", true);
     static BooleanValue SQUARE_CONTROL_INPUTS = new BooleanValue("DriveManually/SquareControlInputs", true);
 
+    /**
+     * Constructs an instance of this class.
+     * @param driveSubsystem The drive subsystem to control.
+     * @param leftJoystick The left joystick used for tank-style control.
+     * @param rightJoystick The right joystick used for tank-style control.
+     * @param xboxController An Xbox controller used for arcade-style control.
+     */
     public DriveManually(final DriveSubsystem driveSubsystem, final Joystick leftJoystick, final Joystick rightJoystick,
             final XboxController xboxController) {
         super(() -> {
