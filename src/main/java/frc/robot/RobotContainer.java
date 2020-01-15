@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveManually;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.utilities.NRGPreferences;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -39,6 +40,8 @@ public class RobotContainer {
     public RobotContainer() {
         // Configure the button bindings
         configureButtonBindings();
+
+        NRGPreferences.init();
 
         driveSubsystem
                 .setDefaultCommand(new DriveManually(driveSubsystem, leftJoystick, rightJoystick, xboxController));
