@@ -154,6 +154,15 @@ public class NRGPreferences {
         public String getValue() {
             return preferences.getString(this.key, this.defaultValue);
         }
+
+        /**
+         * Set the current value of the preferences key.
+         * 
+         * @param value The new value.
+         */
+        public void setValue(String value) {
+            preferences.putString(this.key, value);
+        }
     }
 
     /** A class implementing a preferences integer value. */
@@ -183,6 +192,14 @@ public class NRGPreferences {
             return preferences.getInt(this.key, this.defaultValue);
         }
 
+        /**
+         * Set the current value of the preferences key.
+         * 
+         * @param value The new value.
+         */
+        public void setValue(int value) {
+            preferences.putInt(this.key, value);
+        }
     }
 
     /** A class implementing a preferences double value. */
@@ -212,6 +229,14 @@ public class NRGPreferences {
             return preferences.getDouble(this.key, this.defaultValue);
         }
 
+        /**
+         * Set the current value of the preferences key.
+         * 
+         * @param value The new value.
+         */
+        public void setValue(double value) {
+            preferences.putDouble(this.key, value);
+        }
     }
 
     /** A class implementing a preferences Boolean value. */
@@ -240,34 +265,49 @@ public class NRGPreferences {
         public boolean getValue() {
             return preferences.getBoolean(this.key, this.defaultValue);
         }
+
+        /**
+         * Set the current value of the preferences key.
+         * 
+         * @param value The new value.
+         */
+        public void setValue(boolean value) {
+            preferences.putBoolean(this.key, value);
+        }
     }
 
-    /** A Visitor implementation that writes the default value of the preferences key to the preferences file. */
+    /**
+     * A Visitor implementation that writes the default value of the preferences key
+     * to the preferences file.
+     */
     private static class WriteDefaultVistor implements IValueVisitor {
 
         @Override
         public void visit(final StringValue value) {
-            preferences.putString(value.getKey(), value.getDefaultValue());
+            value.setValue(value.getDefaultValue());
         }
 
         @Override
         public void visit(final IntegerValue value) {
-            preferences.putInt(value.getKey(), value.getDefaultValue());
+            value.setValue(value.getDefaultValue());
         }
 
         @Override
         public void visit(final DoubleValue value) {
-            preferences.putDouble(value.getKey(), value.getDefaultValue());
+            value.setValue(value.getDefaultValue());
         }
 
         @Override
         public void visit(final BooleanValue value) {
-            preferences.putBoolean(value.getKey(), value.getDefaultValue());
+            value.setValue(value.getDefaultValue());
         }
 
     }
 
-    /** A Visitor implementation that prints the current value to the console if it is not set to the default value.  */
+    /**
+     * A Visitor implementation that prints the current value to the console if it
+     * is not set to the default value.
+     */
     private static class PrintIfNotDefaultVisitor implements IValueVisitor {
 
         private void printNonDefaultValue(String key, String value) {
@@ -319,11 +359,13 @@ public class NRGPreferences {
     private static final WriteDefaultVistor writeDefaultVisitor = new WriteDefaultVistor();
     private static final PrintIfNotDefaultVisitor printIfNotDefaultVisitor = new PrintIfNotDefaultVisitor();
 
-    /** Initializes the preferences, write default preferences if needed/requested. */
+    /**
+     * Initializes the preferences, write default preferences if needed/requested.
+     */
     public static void init() {
         if (WRITE_DEFAULT.getValue()) {
             values.stream().forEach(p -> p.writeDefaultValue());
-            preferences.putBoolean(WRITE_DEFAULT.getKey(), false);
+            WRITE_DEFAULT.setValue(false);
         } else {
             values.stream().forEach(p -> p.printIfNotDefault());
         }
