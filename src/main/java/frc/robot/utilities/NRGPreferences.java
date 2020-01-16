@@ -180,7 +180,7 @@ public class NRGPreferences {
          * @return The current value.
          */
         public int getValue() {
-            return preferences.getInt(this.key, this.defaultValue.intValue());
+            return preferences.getInt(this.key, this.defaultValue);
         }
 
     }
@@ -209,7 +209,7 @@ public class NRGPreferences {
          * @return The current value.
          */
         public double getValue() {
-            return preferences.getDouble(this.key, this.defaultValue.doubleValue());
+            return preferences.getDouble(this.key, this.defaultValue);
         }
 
     }
@@ -238,7 +238,7 @@ public class NRGPreferences {
          * @return The current value.
          */
         public boolean getValue() {
-            return preferences.getBoolean(this.key, this.defaultValue.booleanValue());
+            return preferences.getBoolean(this.key, this.defaultValue);
         }
     }
 
@@ -287,7 +287,7 @@ public class NRGPreferences {
         public void visit(IntegerValue value) {
             int currentValue = value.getValue();
 
-            if (currentValue != value.getDefaultValue().intValue()) {
+            if (currentValue != value.getDefaultValue()) {
                 printNonDefaultValue(value.getKey(), Integer.toString(currentValue));
             }
         }
@@ -296,7 +296,7 @@ public class NRGPreferences {
         public void visit(DoubleValue value) {
             double currentValue = value.getValue();
 
-            if (currentValue != value.getDefaultValue().doubleValue()) {
+            if (currentValue != value.getDefaultValue()) {
                 printNonDefaultValue(value.getKey(), Double.toString(currentValue));
             }
         }
@@ -305,7 +305,7 @@ public class NRGPreferences {
         public void visit(BooleanValue value) {
             boolean currentValue = value.getValue();
 
-            if (currentValue != value.getDefaultValue().booleanValue()) {
+            if (currentValue != value.getDefaultValue()) {
                 printNonDefaultValue(value.getKey(), Boolean.toString(currentValue));
             }
         }
