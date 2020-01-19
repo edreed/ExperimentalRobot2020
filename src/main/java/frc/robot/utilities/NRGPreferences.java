@@ -8,11 +8,8 @@
 package frc.robot.utilities;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Set;
 import java.util.stream.Stream;
 
-import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
