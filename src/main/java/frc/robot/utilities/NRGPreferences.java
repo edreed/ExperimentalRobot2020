@@ -61,7 +61,7 @@ public class NRGPreferences {
     }
 
     /** The base class for all preferences value types. */
-    public static abstract class ValueBase implements IVisitableValue {
+    public static abstract class Value implements IVisitableValue {
         protected final String key;
 
         /**
@@ -69,7 +69,7 @@ public class NRGPreferences {
          * 
          * @param key The preferences key.
          */
-        protected ValueBase(final String key) {
+        protected Value(final String key) {
             this.key = key;
 
             values.add(this);
@@ -104,7 +104,7 @@ public class NRGPreferences {
      * 
      * @param <TValue> The preference value type.
      */
-    public static abstract class Value<TValue> extends ValueBase {
+    public static abstract class TypedValue<TValue> extends Value {
         protected final TValue defaultValue;
 
         /**
@@ -113,7 +113,7 @@ public class NRGPreferences {
          * @param key          The preferences key.
          * @param defaultValue The default value.
          */
-        protected Value(final String key, final TValue defaultValue) {
+        protected TypedValue(final String key, final TValue defaultValue) {
             super(key);
             this.defaultValue = defaultValue;
         }
@@ -129,7 +129,7 @@ public class NRGPreferences {
     }
 
     /** A class implementing a preferences string value. */
-    public static class StringValue extends Value<String> {
+    public static class StringValue extends TypedValue<String> {
 
         /**
          * Constructs an instance of this class.
@@ -166,7 +166,7 @@ public class NRGPreferences {
     }
 
     /** A class implementing a preferences integer value. */
-    public static class IntegerValue extends Value<Integer> implements IVisitableValue {
+    public static class IntegerValue extends TypedValue<Integer> implements IVisitableValue {
 
         /**
          * Constructs an instance of this class.
@@ -203,7 +203,7 @@ public class NRGPreferences {
     }
 
     /** A class implementing a preferences double value. */
-    public static class DoubleValue extends Value<Double> implements IVisitableValue {
+    public static class DoubleValue extends TypedValue<Double> implements IVisitableValue {
 
         /**
          * Constructs an instance of this class.
@@ -240,7 +240,7 @@ public class NRGPreferences {
     }
 
     /** A class implementing a preferences Boolean value. */
-    public static class BooleanValue extends Value<Boolean> implements IVisitableValue {
+    public static class BooleanValue extends TypedValue<Boolean> implements IVisitableValue {
 
         /**
          * Constructs an instance of this class.
@@ -352,7 +352,7 @@ public class NRGPreferences {
 
     }
 
-    private static final ArrayList<ValueBase> values = new ArrayList<ValueBase>();
+    private static final ArrayList<Value> values = new ArrayList<Value>();
     private static final BooleanValue WRITE_DEFAULT = new BooleanValue("WriteDefaultPrefs", true);
 
     private static final Preferences preferences = Preferences.getInstance();
