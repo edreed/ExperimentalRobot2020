@@ -7,7 +7,16 @@
 
 package frc.robot.utilities;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import org.reflections.ReflectionUtils;
+import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 import edu.wpi.first.wpilibj.Preferences;
 
@@ -71,8 +80,6 @@ public class NRGPreferences {
          */
         protected Value(final String key) {
             this.key = key;
-
-            values.add(this);
         }
 
         /**
@@ -352,8 +359,8 @@ public class NRGPreferences {
 
     }
 
-    private static final ArrayList<Value> values = new ArrayList<Value>();
-    private static final BooleanValue WRITE_DEFAULT = new BooleanValue("WriteDefaultPrefs", true);
+    @NRGPreferencesValue
+    public static final BooleanValue WRITE_DEFAULT = new BooleanValue("WriteDefaultPrefs", true);
 
     private static final Preferences preferences = Preferences.getInstance();
     private static final WriteDefaultVistor writeDefaultVisitor = new WriteDefaultVistor();
@@ -364,10 +371,33 @@ public class NRGPreferences {
      */
     public static void init() {
         if (WRITE_DEFAULT.getValue()) {
-            values.stream().forEach(p -> p.writeDefaultValue());
+            getValues().forEach(p -> p.writeDefaultValue());
             WRITE_DEFAULT.setValue(false);
         } else {
-            values.stream().forEach(p -> p.printIfNotDefault());
+            getValues().forEach(p -> p.printIfNotDefault());
         }
+    }
+
+    /**
+     * Returns all of the preferences values in the robot.
+     * 
+     * @return A stream providing access to all of the preferences values in the
+     *         robot.
+     */
+    private static Stream<Value> getValues() {
+        var config = new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("frc.robot"))
+                .setScanners(new FieldAnnotationsScanner());
+        var values = new Reflections(config).getFieldsAnnotatedWith(NRGPreferencesValue.class);
+
+        return values.stream().filter(f -> Modifier.isStatic(f.getModifiers())).map(f -> {
+            try {
+                return (Value) f.get(null);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
     }
 }

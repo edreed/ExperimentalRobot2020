@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.utilities.NRGPreferencesValue;
 import frc.robot.utilities.NRGPreferences.BooleanValue;
 
 /**
@@ -20,8 +21,11 @@ import frc.robot.utilities.NRGPreferences.BooleanValue;
  */
 public class DriveManually extends RunCommand {
 
-    static BooleanValue USING_TANK_CONTROL = new BooleanValue("DriveManually/UsingTankControl", true);
-    static BooleanValue SQUARE_CONTROL_INPUTS = new BooleanValue("DriveManually/SquareControlInputs", true);
+    @NRGPreferencesValue
+    public static BooleanValue USING_TANK_CONTROL = new BooleanValue("DriveManually/UsingTankControl", true);
+
+    @NRGPreferencesValue
+    public static BooleanValue SQUARE_CONTROL_INPUTS = new BooleanValue("DriveManually/SquareControlInputs", true);
 
     /**
      * Constructs an instance of this class.
