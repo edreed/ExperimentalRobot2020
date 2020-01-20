@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -20,6 +22,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     private DifferentialDrive driveBase = new DifferentialDrive(leftMotor, rightMotor);
 
+    private AHRS navx = new AHRS();
+    
     /**
      * Constructs an instance of this class.
      */
@@ -31,6 +35,15 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
+    }
+
+    /**
+     * Returns the rate of change of yaw (Z-axis) of the gyro.
+     * 
+     * @return The rate of change of yaw in degress per second.
+     */
+    public double getTurnRate() {
+        return navx.getRate();
     }
 
     /**

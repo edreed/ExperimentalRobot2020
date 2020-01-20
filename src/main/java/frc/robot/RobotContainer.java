@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveManually;
+import frc.robot.commands.DriveStraight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utilities.NRGPreferences;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -32,7 +32,7 @@ public class RobotContainer {
 
     private final XboxController xboxController = new XboxController(3);
 
-    private final Command autonomousCommand = new WaitCommand(15.0);
+    private final Command autonomousCommand = new DriveStraight(driveSubsystem).withSpeed(0.5).withTimeout(3.0);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -43,7 +43,7 @@ public class RobotContainer {
 
         NRGPreferences.init();
 
-        driveSubsystem
+        driveSubsystem 
                 .setDefaultCommand(new DriveManually(driveSubsystem, leftJoystick, rightJoystick, xboxController));
     }
 
