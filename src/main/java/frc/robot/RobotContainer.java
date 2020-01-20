@@ -32,7 +32,7 @@ public class RobotContainer {
 
     private final XboxController xboxController = new XboxController(3);
 
-    private final Command autonomousCommand = new DriveStraight(driveSubsystem).withSpeed(0.5).withTimeout(3.0);
+    private final Command autonomousCommand = new DriveStraight(driveSubsystem).withSpeed(0.5).forDistance(3.0);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
