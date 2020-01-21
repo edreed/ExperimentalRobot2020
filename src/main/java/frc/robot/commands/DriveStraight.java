@@ -126,11 +126,11 @@ public class DriveStraight extends CommandBase {
     @NRGPreferencesValue
     public static DoubleValue DRIVE_STRAIGHT_DEFAULT_SPEED = new DoubleValue("DriveStraight/DefaultSpeed", 1.0);
     @NRGPreferencesValue
-    public static DoubleValue DRIVE_STRAIGHT_P = new DoubleValue("DriveStraight/P", 1.0);
+    public static DoubleValue DRIVE_STRAIGHT_P = new DoubleValue("DriveStraight/P", 0.081);
     @NRGPreferencesValue
-    public static DoubleValue DRIVE_STRAIGHT_I = new DoubleValue("DriveStraight/I", 0.0);
+    public static DoubleValue DRIVE_STRAIGHT_I = new DoubleValue("DriveStraight/I", 0.00016);
     @NRGPreferencesValue
-    public static DoubleValue DRIVE_STRAIGHT_D = new DoubleValue("DriveStraight/D", 0.0);
+    public static DoubleValue DRIVE_STRAIGHT_D = new DoubleValue("DriveStraight/D", 0.0072);
 
     private static final ConstantSpeedTranslation DEFAULT_SPEED_CONTROLLER = new PreferencesSpeedTranslation();
 
