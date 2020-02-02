@@ -182,7 +182,7 @@ public class DriveStraight extends CommandBase {
     public void initialize() {
         this.pid = new PIDController(DRIVE_STRAIGHT_P.getValue(), DRIVE_STRAIGHT_I.getValue(),
                 DRIVE_STRAIGHT_D.getValue());
-        this.pid.setSetpoint(0.0);
+        this.pid.setSetpoint(this.drive.getHeading());
     }
 
     /**
@@ -191,7 +191,7 @@ public class DriveStraight extends CommandBase {
      */
     @Override
     public void execute() {
-        double rotation = this.pid.calculate(this.drive.getTurnRate());
+        double rotation = this.pid.calculate(this.drive.getHeading());
 
         this.drive.arcadeDrive(this.translationController.getSpeed(), rotation, false);
     }
