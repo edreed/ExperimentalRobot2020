@@ -168,7 +168,7 @@ public class DriveStraight extends CommandBase {
      * 
      * @return This object.
      */
-    public DriveStraight forDistance(double distance) {
+    public DriveStraight forMeters(double distance) {
         this.translationController = new DistanceTranslation(this.drive,
                 (ConstantSpeedTranslation) this.translationController, distance);
         
