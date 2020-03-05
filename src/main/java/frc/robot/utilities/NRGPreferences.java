@@ -89,6 +89,15 @@ public class NRGPreferences {
         }
 
         /**
+         * Returns true if the preferences value exists.
+         * 
+         * @return Whether the value exists.
+         */
+        public boolean exists() {
+            return preferences.containsKey(this.key);
+        }
+
+        /**
          * Writes the default value of this preference key to the preferences file.
          */
         public void writeDefaultValue() {
@@ -371,7 +380,13 @@ public class NRGPreferences {
             getValues().forEach(p -> p.writeDefaultValue());
             WRITE_DEFAULT.setValue(false);
         } else {
-            getValues().forEach(p -> p.printIfNotDefault());
+            getValues().forEach(p -> {
+                if (p.exists()) {
+                    p.printIfNotDefault();
+                } else {
+                    p.writeDefaultValue();
+                }
+            });
         }
     }
 
