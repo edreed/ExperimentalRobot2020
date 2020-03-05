@@ -44,6 +44,7 @@ public class RobotContainer {
         configureButtonBindings();
 
         NRGPreferences.init();
+        NRGPreferences.addShuffleboardTab();
 
         driveSubsystem.initShuffleboard();
         driveSubsystem.setDefaultCommand(

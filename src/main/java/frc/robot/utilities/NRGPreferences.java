@@ -16,6 +16,10 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
  * An implementation of robot preferences.
@@ -365,6 +369,50 @@ public class NRGPreferences {
 
     }
 
+    /**
+     * A Visitor implementation that adds the value with getters and setters to a
+     * SendableBuilder.
+     */
+    private static class SendableValueVisitor implements IValueVisitor {
+        private final SendableBuilder builder;
+
+        public SendableValueVisitor(SendableBuilder builder) {
+            this.builder = builder;
+        }
+
+        @Override
+        public void visit(StringValue value) {
+            builder.addStringProperty(value.getKey(), value::getValue, value::setValue);
+        }
+
+        @Override
+        public void visit(IntegerValue value) {
+
+        }
+
+        @Override
+        public void visit(DoubleValue value) {
+            builder.addDoubleProperty(value.getKey(), value::getValue, value::setValue);
+        }
+
+        @Override
+        public void visit(BooleanValue value) {
+            builder.addBooleanProperty(value.getKey(), value::getValue, value::setValue);
+        }
+
+    }
+
+    private static class SendablePreferences implements Sendable {
+
+        @Override
+        public void initSendable(SendableBuilder builder) {
+            SendableValueVisitor visitor = new SendableValueVisitor(builder);
+
+            getValues().sorted((l, r) -> l.getKey().compareTo(r.getKey())).forEach(p -> p.accept(visitor));
+        }
+
+    }
+
     @NRGPreferencesValue
     public static final BooleanValue WRITE_DEFAULT = new BooleanValue("WriteDefaultPrefs", true);
 
@@ -388,6 +436,15 @@ public class NRGPreferences {
                 }
             });
         }
+    }
+
+    /**
+     * Adds a preferences tab to the Shuffleboard.
+     */
+    public static void addShuffleboardTab() {
+        ShuffleboardTab preferencesTab = Shuffleboard.getTab("Preferences");
+
+        preferencesTab.add("Preferences", new SendablePreferences());
     }
 
     /**
