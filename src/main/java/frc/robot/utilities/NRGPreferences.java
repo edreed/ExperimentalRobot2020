@@ -8,6 +8,7 @@
 package frc.robot.utilities;
 
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.reflections.Reflections;
@@ -377,16 +378,31 @@ public class NRGPreferences {
      */
     public static void init() {
         if (WRITE_DEFAULT.getValue()) {
+            // Remove all keys, and write default values to the known ones.
+            preferences.removeAll();
             getValues().forEach(p -> p.writeDefaultValue());
             WRITE_DEFAULT.setValue(false);
         } else {
+            HashSet<String> validKeys = new HashSet<String>();
+
+            // Print if non-default values and add keys not currently in the preferences.
             getValues().forEach(p -> {
                 if (p.exists()) {
                     p.printIfNotDefault();
                 } else {
                     p.writeDefaultValue();
                 }
+                validKeys.add(p.getKey());
             });
+
+            // Remove unused preferences keys. (Keys with leading "." are internal to
+            // the Shuffleboard implementation and should not be removed.)
+            preferences.getKeys().stream()
+                .filter(k -> !k.startsWith(".") && !validKeys.contains(k))
+                .forEach(k -> {
+                    System.out.println(String.format("REMOVING UNUSED KEY: %s", k));
+                    preferences.remove(k);
+                });
         }
     }
 
