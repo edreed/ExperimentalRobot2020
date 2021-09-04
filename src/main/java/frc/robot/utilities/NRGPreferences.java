@@ -180,7 +180,7 @@ public class NRGPreferences {
     }
 
     /** A class implementing a preferences integer value. */
-    public static class IntegerValue extends TypedValue<Integer> implements IVisitableValue {
+    public static class IntegerValue extends TypedValue<Integer> {
 
         /**
          * Constructs an instance of this class.
@@ -217,7 +217,7 @@ public class NRGPreferences {
     }
 
     /** A class implementing a preferences double value. */
-    public static class DoubleValue extends TypedValue<Double> implements IVisitableValue {
+    public static class DoubleValue extends TypedValue<Double> {
 
         /**
          * Constructs an instance of this class.
@@ -254,7 +254,7 @@ public class NRGPreferences {
     }
 
     /** A class implementing a preferences Boolean value. */
-    public static class BooleanValue extends TypedValue<Boolean> implements IVisitableValue {
+    public static class BooleanValue extends TypedValue<Boolean> {
 
         /**
          * Constructs an instance of this class.
