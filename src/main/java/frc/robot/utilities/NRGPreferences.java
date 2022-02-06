@@ -7,14 +7,15 @@
 
 package frc.robot.utilities;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.reflections.Reflections;
-import org.reflections.scanners.FieldAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+
+import static org.reflections.scanners.Scanners.*;
 
 import edu.wpi.first.wpilibj.Preferences;
 
@@ -413,9 +414,8 @@ public class NRGPreferences {
      *         robot.
      */
     private static Stream<Value> getValues() {
-        var config = new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("frc.robot"))
-                .setScanners(new FieldAnnotationsScanner());
-        var values = new Reflections(config).getFieldsAnnotatedWith(NRGPreferencesValue.class);
+        var config = new ConfigurationBuilder().forPackage("frc.robot").setScanners(FieldsAnnotated);
+        var values = new Reflections(config).get(FieldsAnnotated.with(NRGPreferencesValue.class).as(Field.class));
 
         return values.stream().filter(f -> Modifier.isStatic(f.getModifiers())).map(f -> {
             try {

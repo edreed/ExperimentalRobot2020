@@ -54,7 +54,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 
-    compile 'org.reflections:reflections:0.9.12'
+    compile 'org.reflections:reflections:0.10.2'
 
     // Enable simulation gui support. Must check the box in vscode to enable support
     // upon debugging
