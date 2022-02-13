@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.Preferences;
 /**
  * An implementation of robot preferences.
  */
-public class NRGPreferences {
+public class RobotPreferences {
 
     /**
      * An interface defining methods that allow a Visitor to perform an operation on
@@ -367,7 +367,7 @@ public class NRGPreferences {
 
     }
 
-    @NRGPreferencesValue
+    @RobotPreferencesValue
     public static final BooleanValue WRITE_DEFAULT = new BooleanValue("WriteDefaultPrefs", true);
 
     private static final Preferences preferences = Preferences.getInstance();
@@ -415,7 +415,7 @@ public class NRGPreferences {
      */
     private static Stream<Value> getValues() {
         var config = new ConfigurationBuilder().forPackage("frc.robot").setScanners(FieldsAnnotated);
-        var values = new Reflections(config).get(FieldsAnnotated.with(NRGPreferencesValue.class).as(Field.class));
+        var values = new Reflections(config).get(FieldsAnnotated.with(RobotPreferencesValue.class).as(Field.class));
 
         return values.stream().filter(f -> Modifier.isStatic(f.getModifiers())).map(f -> {
             try {

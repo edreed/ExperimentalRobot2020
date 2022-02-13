@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.utilities.NRGPreferencesValue;
-import frc.robot.utilities.NRGPreferences.DoubleValue;
+import frc.robot.utilities.RobotPreferencesValue;
+import frc.robot.utilities.RobotPreferences.DoubleValue;
 
 /**
  * Drives the robot on the current heading in a straight line.
@@ -123,13 +123,13 @@ public class DriveStraight extends CommandBase {
         }
     }
 
-    @NRGPreferencesValue
+    @RobotPreferencesValue
     public static DoubleValue DRIVE_STRAIGHT_DEFAULT_SPEED = new DoubleValue("DriveStraight/DefaultSpeed", 1.0);
-    @NRGPreferencesValue
+    @RobotPreferencesValue
     public static DoubleValue DRIVE_STRAIGHT_P = new DoubleValue("DriveStraight/P", 0.081);
-    @NRGPreferencesValue
+    @RobotPreferencesValue
     public static DoubleValue DRIVE_STRAIGHT_I = new DoubleValue("DriveStraight/I", 0.00016);
-    @NRGPreferencesValue
+    @RobotPreferencesValue
     public static DoubleValue DRIVE_STRAIGHT_D = new DoubleValue("DriveStraight/D", 0.0072);
 
     private static final ConstantSpeedTranslation DEFAULT_SPEED_CONTROLLER = new PreferencesSpeedTranslation();

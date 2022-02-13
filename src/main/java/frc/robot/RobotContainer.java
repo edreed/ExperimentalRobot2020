@@ -14,7 +14,7 @@ import frc.robot.commands.DriveManually;
 import frc.robot.commands.DriveStraight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.utilities.NRGPreferences;
+import frc.robot.utilities.RobotPreferences;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -43,7 +43,7 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        NRGPreferences.init();
+        RobotPreferences.init();
 
         driveSubsystem.initShuffleboard();
         driveSubsystem.setDefaultCommand(

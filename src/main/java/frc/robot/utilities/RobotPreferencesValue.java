@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
  * Add your docs here.
  */
 @Target(ElementType.FIELD)
-public @interface NRGPreferencesValue {
+public @interface RobotPreferencesValue {
 }
