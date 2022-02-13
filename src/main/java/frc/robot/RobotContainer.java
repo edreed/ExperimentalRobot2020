@@ -10,6 +10,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.commands.DriveManually;
 import frc.robot.commands.DriveStraight;
 import frc.robot.subsystems.DriveSubsystem;
@@ -45,10 +47,19 @@ public class RobotContainer {
 
         RobotPreferences.init();
 
-        driveSubsystem.initShuffleboard();
         driveSubsystem.setDefaultCommand(
             new DriveManually(driveSubsystem, leftJoystick, rightJoystick, xboxController));
 
+        initShuffleboard();
+    }
+
+    /**
+     * Initialize Shuffleboard tabs and widgets.
+     */
+    private void initShuffleboard() {
+        RobotPreferences.initShuffleboardTab("Preferences");
+
+        driveSubsystem.initShuffleboard();
         visionSubsystem.initShuffleboard();
     }
 

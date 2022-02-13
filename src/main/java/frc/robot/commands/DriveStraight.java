@@ -126,11 +126,11 @@ public class DriveStraight extends CommandBase {
     @RobotPreferencesValue
     public static DoubleValue DRIVE_STRAIGHT_DEFAULT_SPEED = new DoubleValue("DriveStraight/DefaultSpeed", 1.0);
     @RobotPreferencesValue
-    public static DoubleValue DRIVE_STRAIGHT_P = new DoubleValue("DriveStraight/P", 0.081);
+    public static DoubleValue DRIVE_STRAIGHT_P = new DoubleValue("DriveStraight/Kp", 0.081);
     @RobotPreferencesValue
-    public static DoubleValue DRIVE_STRAIGHT_I = new DoubleValue("DriveStraight/I", 0.00016);
+    public static DoubleValue DRIVE_STRAIGHT_I = new DoubleValue("DriveStraight/Ki", 0.00016);
     @RobotPreferencesValue
-    public static DoubleValue DRIVE_STRAIGHT_D = new DoubleValue("DriveStraight/D", 0.0072);
+    public static DoubleValue DRIVE_STRAIGHT_D = new DoubleValue("DriveStraight/Kd", 0.0072);
 
     private static final ConstantSpeedTranslation DEFAULT_SPEED_CONTROLLER = new PreferencesSpeedTranslation();
 

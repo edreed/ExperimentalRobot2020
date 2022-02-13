@@ -10,6 +10,10 @@ package frc.robot.utilities;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.reflections.Reflections;
@@ -17,7 +21,13 @@ import org.reflections.util.ConfigurationBuilder;
 
 import static org.reflections.scanners.Scanners.*;
 
+import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 /**
  * An implementation of robot preferences.
@@ -88,6 +98,44 @@ public class RobotPreferences {
          */
         public String getKey() {
             return this.key;
+        }
+
+        /**
+         * Returns the preferences group.
+         * 
+         * The group is by the text preceding the first forward slash character in the key. For example,
+         * the group defined by the key "Drive/Kp" is "Drive". If the key contains no forward slash
+         * character, the group is "Ungrouped".
+         * 
+         * @return
+         */
+        public String getGroup() {
+            int index = this.key.indexOf('/');
+
+            if (index <= 0) {
+                return "Ungrouped";
+            }
+
+            return this.key.substring(0, index);
+        }
+
+        /**
+         * Returns the preferences name.
+         * 
+         * The name is by the text after the first forward slash character in the key. For example,
+         * the name defined by the key "Drive/Kp" is "Kp". If the key contains no forward slash
+         * character, the key is name.
+         * 
+         * @return
+         */
+        public String getName() {
+            int index = this.key.indexOf('/');
+
+            if (index <= 0) {
+                return this.key;
+            }
+
+            return this.key.substring(index + 1);
         }
 
         /**
@@ -367,6 +415,58 @@ public class RobotPreferences {
 
     }
 
+    /**
+     * A Visitor implementation that adds a Shuffleboard widget to a layout for the
+     * specified value.
+     */
+    private static class AddToShuffleboardLayoutVisitor implements IValueVisitor {
+        ShuffleboardLayout layout;
+
+        public AddToShuffleboardLayoutVisitor(ShuffleboardLayout layout) {
+            this.layout = layout;
+        }
+
+        @Override
+        public void visit(StringValue value) {
+            this.layout.add(value.getName(), value.getValue())
+                .withWidget(BuiltInWidgets.kTextView)
+                .getEntry()
+                .addListener(
+                    (event) -> value.setValue(event.getEntry().getString(value.getDefaultValue())),
+                    EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        }
+
+        @Override
+        public void visit(IntegerValue value) {
+            this.layout.add(value.getName(), value.getValue())
+                .withWidget(BuiltInWidgets.kTextView)
+                .getEntry()
+                .addListener(
+                    (event) -> value.setValue(Integer.parseInt(event.getEntry().getString(value.getDefaultValue().toString()))),
+                    EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        }
+
+        @Override
+        public void visit(DoubleValue value) {
+            this.layout.add(value.getName(), value.getValue())
+                .withWidget(BuiltInWidgets.kTextView)
+                .getEntry()
+                .addListener(
+                    (event) -> value.setValue(event.getEntry().getDouble(value.getDefaultValue())),
+                    EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        }
+
+        @Override
+        public void visit(BooleanValue value) {
+            this.layout.add(value.getName(), value.getValue())
+                .withWidget(BuiltInWidgets.kToggleSwitch)
+                .getEntry()
+                .addListener(
+                    (event) -> value.setValue(event.getEntry().getBoolean(value.getDefaultValue())),
+                    EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        }
+    }
+
     @RobotPreferencesValue
     public static final BooleanValue WRITE_DEFAULT = new BooleanValue("WriteDefaultPrefs", true);
 
@@ -408,6 +508,30 @@ public class RobotPreferences {
     }
 
     /**
+     * Adds a tab to the Shuffleboard with layouts for each preference group containing
+     * widgets that allow changing of values.
+     * 
+     * @param tabName The name of the tab containing preferences widgets.
+     */
+    public static void initShuffleboardTab(String tabName) {
+        var tab = Shuffleboard.getTab(tabName);
+
+        var groups = getValues().collect(Collectors.groupingBy(Value::getGroup));
+        int index = 0;
+
+        for (var group : groups.entrySet()) {
+            var groupLayout = tab.getLayout(group.getKey(), BuiltInLayouts.kList)
+                .withPosition(index++ * 2, 0)
+                .withSize(2, ((group.getValue().size() + 1) * 2) / 3);
+            var addToLayoutVisitor = new AddToShuffleboardLayoutVisitor(groupLayout);
+
+            group.getValue().stream()
+                .sorted((l, r) -> l.getName().compareTo(r.getName()))
+                .forEach(v -> v.accept(addToLayoutVisitor));
+        }
+    }
+
+    /**
      * Returns all of the preferences values in the robot.
      * 
      * @return A stream providing access to all of the preferences values in the
@@ -417,15 +541,18 @@ public class RobotPreferences {
         var config = new ConfigurationBuilder().forPackage("frc.robot").setScanners(FieldsAnnotated);
         var values = new Reflections(config).get(FieldsAnnotated.with(RobotPreferencesValue.class).as(Field.class));
 
-        return values.stream().filter(f -> Modifier.isStatic(f.getModifiers())).map(f -> {
-            try {
-                return (Value) f.get(null);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return null;
-        });
+        return values.stream()
+            .filter(f -> Modifier.isStatic(f.getModifiers()))
+            .map(f -> {
+                try {
+                    return (Value) f.get(null);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            })
+            .filter(v -> v != null);
     }
 }
