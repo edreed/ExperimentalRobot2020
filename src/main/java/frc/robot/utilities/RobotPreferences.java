@@ -10,6 +10,7 @@ package frc.robot.utilities;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.reflections.Reflections;
@@ -367,7 +368,7 @@ public class RobotPreferences {
 
     }
 
-    @RobotPreferencesValue
+    @RobotPreferencesValue(skipDefaultCheck = true)
     public static final BooleanValue WRITE_DEFAULT = new BooleanValue("WriteDefaultPrefs", true);
 
     private static final Preferences preferences = Preferences.getInstance();
@@ -381,16 +382,14 @@ public class RobotPreferences {
         if (WRITE_DEFAULT.getValue()) {
             // Remove all keys, and write default values to the known ones.
             preferences.removeAll();
-            getValues().forEach(p -> p.writeDefaultValue());
+            getAllValues().forEach(p -> p.writeDefaultValue());
             WRITE_DEFAULT.setValue(false);
         } else {
             HashSet<String> validKeys = new HashSet<String>();
 
-            // Print if non-default values and add keys not currently in the preferences.
-            getValues().forEach(p -> {
-                if (p.exists()) {
-                    p.printIfNotDefault();
-                } else {
+            // Add keys not currently in the preferences.
+            getAllValues().forEach(p -> {
+                if (!p.exists()) {
                     p.writeDefaultValue();
                 }
                 validKeys.add(p.getKey());
@@ -404,28 +403,63 @@ public class RobotPreferences {
                     System.out.println(String.format("REMOVING UNUSED KEY: %s", k));
                     preferences.remove(k);
                 });
+            
+            // Print out the key and value of preferences not currently set to default.
+            getValues(f -> !f.getAnnotation(RobotPreferencesValue.class).skipDefaultCheck())
+                .forEach(Value::printIfNotDefault);
         }
     }
 
     /**
-     * Returns all of the preferences values in the robot.
+     * Returns a stream of all of the preferences fields in the robot.
+     * @return
+     */
+    private static Stream<Field> getFields() {
+        var config = new ConfigurationBuilder().forPackage("frc.robot").setScanners(FieldsAnnotated);
+        var fields = new Reflections(config).get(FieldsAnnotated.with(RobotPreferencesValue.class).as(Field.class));
+
+        return fields.stream().filter(f -> Modifier.isStatic(f.getModifiers()));
+    }
+
+    /**
+     * Returns a stream of all of the preferences values in the robot.
      * 
      * @return A stream providing access to all of the preferences values in the
      *         robot.
      */
-    private static Stream<Value> getValues() {
-        var config = new ConfigurationBuilder().forPackage("frc.robot").setScanners(FieldsAnnotated);
-        var values = new Reflections(config).get(FieldsAnnotated.with(RobotPreferencesValue.class).as(Field.class));
+    private static Stream<Value> getAllValues() {
+        var values = getFields();
 
-        return values.stream().filter(f -> Modifier.isStatic(f.getModifiers())).map(f -> {
-            try {
-                return (Value) f.get(null);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            return null;
-        });
+        return values.map(RobotPreferences::fieldToValue);
+    }
+
+    /**
+     * Returns a stream of all of the preferences values in the robot.
+     * 
+     * @return A stream providing access to all of the preferences values in the
+     *         robot.
+     */
+    private static Stream<Value> getValues(Predicate<? super Field> predicate) {
+        var values = getFields();
+
+        return values.filter(predicate).map(RobotPreferences::fieldToValue);
+    }
+
+    /**
+     * Returns the Value for the specified Field.
+     * 
+     * @param field The Field representing a Value.
+     * 
+     * @return The Field's Value.
+     */
+    private static Value fieldToValue(Field field) {
+        try {
+            return (Value) field.get(null);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
